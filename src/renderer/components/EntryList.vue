@@ -7,8 +7,8 @@
         </div>
 
       <div class="side-nav">
-        <div v-for="i in 200" :key="i">
-            title {{i}}
+        <div v-for="entry in entries" :key="entry.id">
+            {{entry.text}}
         </div>
       </div>
 
@@ -20,8 +20,14 @@
 </template>
 
 <script>
-export default {
+import { mapState } from 'vuex'
 
+export default {
+    computed: {
+        ...mapState({
+            entries: state => state.Journal.Entries
+        })
+    }
 }
 </script>
 
