@@ -5,9 +5,18 @@
 </template>
 
 <script>
-  export default {
-      name: 'djonal'
-  }
+import { mapActions } from 'vuex'
+
+export default {
+    name: 'djonal',
+    created () {
+        this.loadEntryList()
+    },
+
+    methods: {
+        ...mapActions(['loadEntryList'])
+    }
+}
 </script>
 
 <style>
