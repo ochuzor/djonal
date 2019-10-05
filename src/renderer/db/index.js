@@ -3,8 +3,19 @@ import {EntryItems} from '../store/modules/Journal/journal.data'
 
 const LIST_TITLE_CUT_OFF = 100
 
+function addOrReplace (array, item) {
+    const i = array.findIndex(_item => _item.id === item.id)
+    if (i > -1) array.splice(i, 1, item) // array[i] = item
+    else array.unshift(item)
+}
+
 const saveEntry = (data) => {
-    return Promise.resolve(data)
+    return new Promise(resolve => {
+        const itm = _.pick(data, ['id', 'text'])
+        addOrReplace(EntryItems, itm)
+
+        resolve(Object.assign({}, itm))
+    })
 }
 
 const getEntryTopicList = () => {

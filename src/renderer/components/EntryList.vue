@@ -59,7 +59,7 @@ export default {
 
         createNewEntry () {
             const id = shortid.generate()
-            this.selectEntry({id, text: 'eh...'})
+            this.selectedEntry = { id, text: 'eh...' }
         }
     },
 
