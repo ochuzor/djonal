@@ -9,12 +9,13 @@ import { mapActions } from 'vuex'
 
 export default {
     name: 'djonal',
-    created () {
-        this.loadEntryList()
+    async created () {
+        await this.initDb()
+        await this.loadEntryList()
     },
 
     methods: {
-        ...mapActions(['loadEntryList'])
+        ...mapActions(['loadEntryList', 'initDb'])
     }
 }
 </script>

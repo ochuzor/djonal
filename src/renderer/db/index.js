@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import {EntryItems} from '../store/modules/Journal/journal.data'
+import * as indexer from '../indexer'
 
 const LIST_TITLE_CUT_OFF = 100
 
@@ -9,10 +10,20 @@ function addOrReplace (array, item) {
     else array.unshift(item)
 }
 
+const initDb = (lsEntries = EntryItems) => {
+    // @todo: first empty the db
+    return new Promise((resolve) => {
+        lsEntries.map(indexer.addToIndex)
+
+        resolve()
+    })
+}
+
 const saveEntry = (data) => {
     return new Promise(resolve => {
         const itm = _.pick(data, ['id', 'text'])
         addOrReplace(EntryItems, itm)
+        indexer.addToIndex(itm)
 
         resolve(Object.assign({}, itm))
     })
@@ -41,6 +52,7 @@ const getItem = (id) => {
 }
 
 export default {
+    initDb,
     saveEntry,
     getEntryTopicList,
     getItem

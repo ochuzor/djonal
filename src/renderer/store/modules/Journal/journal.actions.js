@@ -17,6 +17,10 @@ const actions = {
                 commit(SAVE_ENTRY, Object.assign({}, data))
                 return data
             })
+    },
+
+    initDb ({ commit }, ls) {
+        return db.initDb()
     }
 }
 
