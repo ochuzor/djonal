@@ -3,7 +3,7 @@ import FlexSearch from 'flexsearch'
 const indexer = new FlexSearch({
     doc: {
         id: 'id',
-        field: ['text', 'tags']
+        field: ['text']
     }
 })
 
