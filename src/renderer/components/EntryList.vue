@@ -3,7 +3,7 @@
     <div class="wrapper">
 
         <div class="top-nav">
-            Top nav
+            <input type="text" v-model.trim="searchTerm" />
         </div>
 
       <div class="side-nav">
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import shortid from 'shortid'
 import db from '../db'
 
@@ -34,7 +34,8 @@ export default {
             selectedEntry: {
                 id: shortid.generate(),
                 text: ''
-            }
+            },
+            searchTerm: ''
         })
     },
 
@@ -43,7 +44,7 @@ export default {
 
         saveChanges (item) {
             this.saveEntry(item)
-                .then(res => console.log('res ->', res))
+                // .then(res => console.log('res ->', res))
                 .catch(e => console.log('something aint right', e))
         },
 
@@ -64,9 +65,10 @@ export default {
     },
 
     computed: {
-        ...mapState({
-            entries: state => state.Journal.Entries
-        })
+        ...mapGetters(['getEntries']),
+        entries: function () {
+            return this.getEntries(this.searchTerm)
+        }
     }
 }
 </script>
