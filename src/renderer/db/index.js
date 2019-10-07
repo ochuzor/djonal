@@ -1,6 +1,11 @@
 import _ from 'lodash'
 import {EntryItems} from '../store/modules/Journal/journal.data'
-import * as indexer from '../indexer'
+import indexer, { addToIndex } from '../indexer'
+
+import fs from 'fs'
+import path from 'path'
+
+const dbFilePath = path.join('C:\\Projects\\djonal-db', 'db.txt')
 
 const LIST_TITLE_CUT_OFF = 100
 
@@ -10,10 +15,18 @@ function addOrReplace (array, item) {
     else array.unshift(item)
 }
 
+const saveToDisk = _.throttle(() => {
+    try {
+        fs.writeFileSync(dbFilePath, indexer.export(), 'utf-8')
+    } catch (e) {
+        console.error('error witing file', e)
+    }
+}, 1500)
+
 const initDb = (lsEntries = EntryItems) => {
     // @todo: first empty the db
     return new Promise((resolve) => {
-        lsEntries.map(indexer.addToIndex)
+        lsEntries.map(addToIndex)
 
         resolve()
     })
@@ -23,7 +36,8 @@ const saveEntry = (data) => {
     return new Promise(resolve => {
         const itm = _.pick(data, ['id', 'text'])
         addOrReplace(EntryItems, itm)
-        indexer.addToIndex(itm)
+        addToIndex(itm)
+        saveToDisk()
 
         resolve(Object.assign({}, itm))
     })

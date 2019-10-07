@@ -8,7 +8,6 @@ const indexer = new FlexSearch({
 })
 
 const addToIndex = (item) => {
-    console.log(`adding ${item.id} to index`)
     indexer.add(item)
 }
 

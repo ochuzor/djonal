@@ -1,7 +1,31 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '../store'
 
 Vue.use(Router)
+
+// const store = {
+//     getters: {
+//         isAuthenticated: true
+//     }
+// }
+
+const ifNotAuthenticated = (to, from, next) => {
+    if (!store.getters.isAuthenticated) {
+        next()
+        return
+    }
+
+    next('/')
+}
+
+const ifAuthenticated = (to, from, next) => {
+    if (store.getters.isAuthenticated) {
+        next()
+        return
+    }
+    next('/login')
+}
 
 export default new Router({
     routes: [
@@ -13,7 +37,14 @@ export default new Router({
         {
             path: '/',
             name: 'entry-list',
-            component: require('@/components/EntryList').default
+            component: require('@/components/EntryList').default,
+            beforeEnter: ifAuthenticated
+        },
+        {
+            path: '/login',
+            name: 'login-page',
+            component: require('@/components/LoginPage').default,
+            beforeEnter: ifNotAuthenticated
         },
         {
             path: '*',
