@@ -4,6 +4,7 @@
 
         <div class="top-nav">
             <input type="text" v-model.trim="searchTerm" />
+            <button @click="logOut">logout</button>
         </div>
 
       <div class="side-nav">
@@ -44,7 +45,6 @@ export default {
 
         saveChanges (item) {
             this.saveEntry(item)
-                // .then(res => console.log('res ->', res))
                 .catch(e => console.log('something aint right', e))
         },
 
@@ -61,6 +61,14 @@ export default {
         createNewEntry () {
             const id = shortid.generate()
             this.selectedEntry = { id, text: 'eh...' }
+        },
+
+        logOut () {
+            this.$store.dispatch('logOut')
+                .then(() => {
+                    return this.$router.push('/login')
+                })
+                .catch(console.error)
         }
     },
 

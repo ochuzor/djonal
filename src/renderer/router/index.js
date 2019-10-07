@@ -4,12 +4,6 @@ import store from '../store'
 
 Vue.use(Router)
 
-// const store = {
-//     getters: {
-//         isAuthenticated: true
-//     }
-// }
-
 const ifNotAuthenticated = (to, from, next) => {
     if (!store.getters.isAuthenticated) {
         next()
