@@ -8,17 +8,18 @@
         </div>
 
       <div class="side-nav">
-        <div class="entry-list-itm" v-for="entry in entries" :key="entry.id" @click="selectEntry(entry)">
+        <div :class="['entry-list-itm', entry.id === selectedEntry.id ? 'selected-item' : '']" 
+            v-for="entry in entries" :key="entry.id" @click="selectEntry(entry)">
             {{entry.text}}
         </div>
       </div>
 
       <div class="content-wrapper">
         <div>
-            <button @click="createNewEntry()">new</button>
+            <button @click="createNewEntry()">+</button>
             <button @click="saveChanges(selectedEntry)">save</button>
         </div>
-        <textarea v-model="selectedEntry.text" placeholder="select or create a new entry to edit"></textarea>
+        <textarea class="edit-box" v-model="selectedEntry.text" placeholder="select or create a new entry to edit"></textarea>
       </div>
 
     </div>
@@ -82,9 +83,15 @@ export default {
 </script>
 
 <style lang="scss">
+    $color-primary-dark:  #826121;
+    $color-primary-light: #d3b340;
+    $color-secondary-dark: #836e4d;
+    $color-secondary-light: #cfc96c;
+    $color-tertiary: #ece7ce;
+
     .wrapper {
         width: 100%;
-        background-color: #fff;
+        // background-color: #fff;
     }
 
     .top-nav {
@@ -94,7 +101,7 @@ export default {
         right: 0;
         height: 60px;
         width: 100%;
-        background-color: green;
+        background-color: $color-primary-light;
     }
 
     .side-nav {
@@ -105,7 +112,7 @@ export default {
         width: 250px;
         height: calc(100% - 60px);
         overflow-y: auto;
-        background-color: red;
+        background-color: $color-secondary-light;
     }
 
     .content-wrapper {
@@ -127,7 +134,7 @@ export default {
     }
 
     .entry-list-itm {
-        background-color: #fff;
+        background-color: $color-tertiary;
 
         // https://css-tricks.com/almanac/properties/t/text-overflow/
         text-overflow: ellipsis;
@@ -138,5 +145,17 @@ export default {
 
         height: 42px;
         padding: 3px;
+        border-bottom: 1px solid #aaa;
+        cursor: pointer;
+        font-size: 14pt;
+        
+        &.selected-item {
+            background-color: $color-primary-light;
+            color: #fff;
+        }
+    }
+
+    textarea.edit-box {
+        font-size: 18pt;
     }
 </style>>

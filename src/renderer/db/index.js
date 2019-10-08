@@ -5,7 +5,8 @@ import indexer, { addToIndex } from '../indexer'
 import fs from 'fs'
 import path from 'path'
 
-const dbFilePath = path.join('C:\\Projects\\djonal-db', 'db.txt')
+const dbFileName = 'db.txt'
+const dbFilePath = path.join('C:\\Projects\\djonal-db', dbFileName)
 
 const LIST_TITLE_CUT_OFF = 100
 

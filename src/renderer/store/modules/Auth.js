@@ -2,8 +2,6 @@ const SET_DATA_FOLDER = 'SET_DATA_FOLDER'
 
 const DATA_FOLDER_PATH_KEY = 'DATA_FOLDER_PATH_KEY'
 
-console.log(localStorage.getItem(DATA_FOLDER_PATH_KEY))
-
 const state = {
     isAuthenticated: false,
     dataFolder: localStorage.getItem(DATA_FOLDER_PATH_KEY) || null
