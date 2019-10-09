@@ -5,18 +5,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-
 export default {
-    name: 'djonal',
-    async created () {
-        await this.initDb()
-        await this.loadEntryList()
-    },
-
-    methods: {
-        ...mapActions(['loadEntryList', 'initDb'])
-    }
+    name: 'djonal'
 }
 </script>
 

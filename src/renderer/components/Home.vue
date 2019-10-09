@@ -4,7 +4,6 @@
 
         <div class="top-nav">
             <input type="text" v-model.trim="searchTerm" />
-            <button @click="logOut">logout</button>
         </div>
 
       <div class="side-nav">
@@ -26,9 +25,10 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import _ from 'lodash'
 import shortid from 'shortid'
-import db from '../db'
+import data from '../data'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
     data () {
@@ -41,16 +41,22 @@ export default {
         })
     },
 
+    created () {
+        this.loadEntries()
+    },
+
     methods: {
-        ...mapActions(['saveEntry']),
+        ...mapActions(['loadEntries', 'saveEntry']),
 
         saveChanges (item) {
-            this.saveEntry(item)
-                .catch(e => console.log('something aint right', e))
+            if (item && !_.isEmpty(item.text)) {
+                this.saveEntry(item)
+                    .catch(e => console.log('something aint right', e))
+            }
         },
 
         selectEntry (item) {
-            db.getItem(item.id)
+            data.getOne(item.id)
                 .then(entry => {
                     this.selectedEntry = Object.assign({}, entry)
                 })
@@ -61,15 +67,7 @@ export default {
 
         createNewEntry () {
             const id = shortid.generate()
-            this.selectedEntry = { id, text: 'eh...' }
-        },
-
-        logOut () {
-            this.$store.dispatch('logOut')
-                .then(() => {
-                    return this.$router.push('/login')
-                })
-                .catch(console.error)
+            this.selectedEntry = { id, text: '' }
         }
     },
 
@@ -129,7 +127,7 @@ export default {
 
         textarea {
             width: 98%;
-            height: 100%;
+            height: 96%;
         }
     }
 

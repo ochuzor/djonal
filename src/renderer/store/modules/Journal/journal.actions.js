@@ -1,26 +1,28 @@
+import db from '../../../data'
 import {
-    SAVE_ENTRY,
-    SET_ENTRY_LIST
+    SET_ENTRY_LIST,
+    SAVE_ENTRY
 } from './journal.constants'
 
-import db from '../../../db'
-
 const actions = {
-    loadEntryList ({ commit }) {
-        return db.getEntryTopicList()
-            .then(ls => commit(SET_ENTRY_LIST, ls))
+    initDb ({ commit }, options) {
+        console.log('init db ->', options)
     },
 
-    saveEntry ({ commit }, entry) {
-        return db.saveEntry(entry)
-            .then((data) => {
-                commit(SAVE_ENTRY, Object.assign({}, data))
-                return data
+    loadEntries ({ commit }) {
+        return db.getAll()
+            .then(docs => {
+                commit(SET_ENTRY_LIST, docs)
+                return docs
             })
     },
 
-    initDb ({ commit }, ls) {
-        return db.initDb()
+    saveEntry ({ commit }, data) {
+        return db.saveDoc(data)
+            .then(doc => {
+                commit(SAVE_ENTRY, doc)
+                return doc
+            })
     }
 }
 

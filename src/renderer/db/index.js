@@ -12,7 +12,7 @@ const LIST_TITLE_CUT_OFF = 100
 
 function addOrReplace (array, item) {
     const i = array.findIndex(_item => _item.id === item.id)
-    if (i > -1) array.splice(i, 1, item) // array[i] = item
+    if (i > -1) array.splice(i, 1, item)
     else array.unshift(item)
 }
 

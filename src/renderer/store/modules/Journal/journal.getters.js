@@ -1,7 +1,7 @@
-import indexer from '../../../indexer'
+import db from '../../../data'
 
 export default {
     getEntries: (state) => (searchTerm) => {
-        return searchTerm ? indexer.search(searchTerm) : state.Entries
+        return searchTerm ? db.search(searchTerm) : state.Entries
     }
 }

@@ -1,32 +1,49 @@
+import _ from 'lodash'
 import FlexSearch from 'flexsearch'
 
-const indexer = new FlexSearch({
-    doc: {
-        id: 'id',
-        field: ['text']
+class DataIndexer {
+    constructor () {
+        this._indexer = new FlexSearch({
+            doc: {
+                id: 'id',
+                field: ['text']
+            }
+        })
     }
-})
 
-const addToIndex = (item) => {
-    indexer.add(item)
+    initWith (data) {
+        this._indexer.impot(data)
+    }
+
+    getDocument (id) {
+        return Object.assign({}, this._indexer.find(id))
+    }
+
+    getAll () {
+        const data = JSON.parse(this._indexer.export({index: false, doc: true}))
+        const docs = _.values(_.first(data))
+        return _.cloneDeep(docs)
+    }
+
+    addToIndex (doc) {
+        this._indexer.add(doc)
+    }
+
+    removeFromIndex (docs) {
+        this._indexer.delete(docs)
+    }
+
+    search (term) {
+        return _.cloneDeep(this._indexer.search(term))
+    }
+
+    toString () {
+        return this._indexer.export()
+    }
 }
 
-// const BULK_SIZE = 1000
-// const INDEX_INTERVAL = 500
-// export function bulkIndex (list) {
-//     if (!_.isArray(list)) throw new Error('Invalid data for indexing')
-//     if (list.length > 0) {
-//         const sub = list.slice(0, BULK_SIZE)
-//         const rest = list.slice(BULK_SIZE)
-
-//         indexer.add(sub)
-
-//         setTimeout(bulkIndex.bind(null, rest), INDEX_INTERVAL)
-//     } else console.log('Indexing complete!!!')
-// }
-
-export default indexer
+export default DataIndexer
 
 export {
-    addToIndex
+    DataIndexer
 }
