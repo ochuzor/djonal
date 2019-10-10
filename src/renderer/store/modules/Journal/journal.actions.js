@@ -3,6 +3,7 @@ import {
     SET_ENTRY_LIST,
     SAVE_ENTRY
 } from './journal.constants'
+import _ from 'lodash'
 
 const { dialog } = require('electron').remote
 
@@ -30,6 +31,10 @@ const actions = {
         return db.saveDoc(data)
             .then(doc => {
                 commit(SAVE_ENTRY, doc)
+
+                const filePath = db.getConfig().filePath
+                if (filePath) db.saveToFile()
+
                 return doc
             })
     },
@@ -42,6 +47,18 @@ const actions = {
             db.setConfig({filePath})
                 .then(() => db.saveToFile())
                 .then(resolve)
+        })
+    },
+
+    loadFromFile ({ dispatch }) {
+        return new Promise(resolve => {
+            const filePath = _.first(dialog.showOpenDialog())
+            if (filePath) {
+                db.loadData(filePath)
+                    .then(() => dispatch('loadEntries'))
+                    .then(resolve)
+            }
+            resolve()
         })
     }
 }

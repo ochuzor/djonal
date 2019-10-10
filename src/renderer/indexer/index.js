@@ -12,7 +12,7 @@ class DataIndexer {
     }
 
     initWith (data) {
-        this._indexer.impot(data)
+        this._indexer.import(data)
     }
 
     getDocument (id) {

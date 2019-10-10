@@ -5,6 +5,7 @@
         <div class="top-nav">
             <input type="text" v-model.trim="searchTerm" />
             <button @click="saveToFile()">Save File</button>
+            <button @click="openFile">open file</button>
         </div>
 
       <div class="side-nav">
@@ -43,7 +44,7 @@ export default {
     },
 
     methods: {
-        ...mapActions(['loadEntries', 'saveEntry', 'saveDataToFile']),
+        ...mapActions(['loadEntries', 'saveEntry', 'saveDataToFile', 'loadFromFile']),
 
         saveChanges (item) {
             if (item && !_.isEmpty(item.text)) {
@@ -69,6 +70,13 @@ export default {
 
         saveToFile () {
             this.saveDataToFile()
+                .catch(errResp => {
+                    console.error(errResp.name)
+                })
+        },
+
+        openFile () {
+            this.loadFromFile()
                 .catch(errResp => {
                     console.error(errResp.name)
                 })

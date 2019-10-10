@@ -8,12 +8,18 @@ const config = {
     indexer: new DataIndexer()
 }
 
-const loadData = (key) => {
+const loadData = (filePath) => {
     return new Promise(resolve => {
-        // const indexer = new DataIndexer()
+        console.log('opening file ->', filePath)
+        const fileData = fs.readFileSync(filePath, 'utf-8')
+        const indexer = new DataIndexer()
+        indexer.initWith(fileData)
+
+        config.indexer = indexer
+        config.filePath = filePath
+
         // const key = key
         // @NB: only assign to config AFTER loading is successful
-
         resolve()
     })
 }
