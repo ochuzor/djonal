@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { DataIndexer } from '../indexer'
+import fs from 'fs'
 
 const config = {
     key: null,
@@ -41,10 +42,31 @@ const search = (searhTerm) => {
     return config.indexer.search(searhTerm)
 }
 
+const getConfig = () => {
+    return _.pick(config, ['filePath'])
+}
+
+const setConfig = (opts) => {
+    const cfg = _.pick(opts, ['key', 'filePath'])
+    _.assign(config, cfg)
+
+    return Promise.resolve()
+}
+
+const saveToFile = () => {
+    return new Promise(resolve => {
+        fs.writeFileSync(config.filePath, config.indexer.toString(), 'utf-8')
+        resolve()
+    })
+}
+
 export default {
     loadData,
     getAll,
     getOne,
     saveDoc,
-    search
+    search,
+    getConfig,
+    setConfig,
+    saveToFile: _.throttle(saveToFile, 1000)
 }

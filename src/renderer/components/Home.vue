@@ -4,6 +4,7 @@
 
         <div class="top-nav">
             <input type="text" v-model.trim="searchTerm" />
+            <button @click="saveToFile()">Save File</button>
         </div>
 
       <div class="side-nav">
@@ -41,12 +42,8 @@ export default {
         })
     },
 
-    created () {
-        this.loadEntries()
-    },
-
     methods: {
-        ...mapActions(['loadEntries', 'saveEntry']),
+        ...mapActions(['loadEntries', 'saveEntry', 'saveDataToFile']),
 
         saveChanges (item) {
             if (item && !_.isEmpty(item.text)) {
@@ -68,6 +65,13 @@ export default {
         createNewEntry () {
             const id = shortid.generate()
             this.selectedEntry = { id, text: '' }
+        },
+
+        saveToFile () {
+            this.saveDataToFile()
+                .catch(errResp => {
+                    console.error(errResp.name)
+                })
         }
     },
 

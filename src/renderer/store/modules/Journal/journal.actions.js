@@ -4,6 +4,15 @@ import {
     SAVE_ENTRY
 } from './journal.constants'
 
+const { dialog } = require('electron').remote
+
+class FileSaveCancelledError extends Error {
+    constructor (message) {
+        super(message)
+        this.name = 'FileSaveCancelledError'
+    }
+}
+
 const actions = {
     initDb ({ commit }, options) {
         console.log('init db ->', options)
@@ -23,6 +32,17 @@ const actions = {
                 commit(SAVE_ENTRY, doc)
                 return doc
             })
+    },
+
+    saveDataToFile () {
+        return new Promise(resolve => {
+            const filePath = db.getConfig().filePath || dialog.showSaveDialog()
+            if (!filePath) throw new FileSaveCancelledError('Saving cancelled')
+
+            db.setConfig({filePath})
+                .then(() => db.saveToFile())
+                .then(resolve)
+        })
     }
 }
 
