@@ -11,7 +11,7 @@ const config = {
 const loadData = (filePath) => {
     return new Promise(resolve => {
         console.log('opening file ->', filePath)
-        const fileData = fs.readFileSync(filePath, 'utf-8')
+        const fileData = fs.readFileSync(filePath, 'utf8')
         const indexer = new DataIndexer()
         indexer.initWith(fileData)
 
