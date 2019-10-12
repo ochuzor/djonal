@@ -14,6 +14,18 @@ class FileSaveCancelledError extends Error {
     }
 }
 
+const showWarning = (msg = 'Are you sure?') => {
+    return new Promise(resolve => {
+        const resp = dialog.showMessageBox({
+            title: 'Warning',
+            type: 'warning',
+            buttons: ['No', 'Yes'],
+            message: msg})
+
+        resolve(resp)
+    })
+}
+
 const actions = {
     initDb ({ commit }, options) {
         console.log('init db ->', options)
@@ -50,7 +62,24 @@ const actions = {
         })
     },
 
-    loadFromFile ({ dispatch }) {
+    loadFromFile ({ dispatch, state }) {
+        // @todo REFACTOR
+        return new Promise(resolve => {
+            if (state.Entries.length && !db.getConfig().filePath) {
+                const resp = dialog.showMessageBox({
+                    type: 'warning',
+                    buttons: ['No', 'Yes'],
+                    message: 'Save current file?'})
+
+                const prom = resp ? dispatch('saveDataToFile') : dispatch('openFile')
+                prom.then(resolve)
+            } else {
+                dispatch('openFile').then(resolve)
+            }
+        })
+    },
+
+    openFile ({ dispatch }) {
         return new Promise(resolve => {
             const filePath = _.first(dialog.showOpenDialog())
             if (filePath) {
@@ -58,7 +87,23 @@ const actions = {
                     .then(() => dispatch('loadEntries'))
                     .then(resolve)
             }
-            resolve()
+        })
+    },
+
+    newFile ({ dispatch, state }) {
+        return new Promise(resolve => {
+            if (state.Entries.length && !db.getConfig().filePath) {
+                showWarning('Save current file?')
+                    .then(resp => {
+                        return resp ? dispatch('saveDataToFile') : db.startNew()
+                    })
+                    .then(() => dispatch('loadEntries'))
+                    .then(resolve)
+            } else {
+                db.startNew()
+                    .then(() => dispatch('loadEntries'))
+                    .then(resolve)
+            }
         })
     }
 }

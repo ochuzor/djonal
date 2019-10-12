@@ -24,6 +24,16 @@ const loadData = (filePath) => {
     })
 }
 
+const startNew = () => {
+    return new Promise(resolve => {
+        config.key = null
+        config.filePath = null
+        config.indexer = new DataIndexer()
+
+        resolve()
+    })
+}
+
 const getAll = () => {
     return new Promise(resolve => {
         resolve(config.indexer.getAll())
@@ -74,5 +84,6 @@ export default {
     search,
     getConfig,
     setConfig,
-    saveToFile: _.throttle(saveToFile, 1000)
+    saveToFile: _.throttle(saveToFile, 1000),
+    startNew
 }
