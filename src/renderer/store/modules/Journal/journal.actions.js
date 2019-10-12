@@ -92,17 +92,15 @@ const actions = {
 
     newFile ({ dispatch, state }) {
         return new Promise(resolve => {
+            const dbChanges = () => db.startNew().then(() => dispatch('loadEntries'))
             if (state.Entries.length && !db.getConfig().filePath) {
                 showWarning('Save current file?')
                     .then(resp => {
-                        return resp ? dispatch('saveDataToFile') : db.startNew()
+                        return resp ? dispatch('saveDataToFile') : dbChanges()
                     })
-                    .then(() => dispatch('loadEntries'))
                     .then(resolve)
             } else {
-                db.startNew()
-                    .then(() => dispatch('loadEntries'))
-                    .then(resolve)
+                dbChanges().then(resolve)
             }
         })
     }
