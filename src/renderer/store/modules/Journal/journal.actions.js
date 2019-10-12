@@ -5,9 +5,21 @@ import {
 } from './journal.constants'
 import _ from 'lodash'
 
+const vex = require('vex-js')
+vex.registerPlugin(require('vex-dialog'))
+vex.defaultOptions.className = 'vex-theme-os'
+
 const { dialog } = require('electron').remote
 
-const DEFAULT_FAKE_PASSWORD = 'FAKE PASSWORD 123'
+const getUserPassword = () => {
+    return new Promise((resolve) => {
+        vex.dialog.prompt({
+            message: 'Enter password',
+            placeholder: 'Password',
+            callback: resolve
+        })
+    })
+}
 
 class FileSaveCancelledError extends Error {
     constructor (message) {
@@ -54,17 +66,26 @@ const actions = {
     },
 
     saveDataToFile () {
-        return new Promise((resolve, reject) => {
-            let {filePath, key} = db.getConfig()
-            if (!filePath) {
-                key = DEFAULT_FAKE_PASSWORD
-                filePath = dialog.showSaveDialog()
-                if (!filePath) throw new FileSaveCancelledError('Saving cancelled')
-            }
+        const getFileSavePath = () => Promise.resolve(dialog.showSaveDialog())
+        const getFilePathAndPassword = () => {
+            return getFileSavePath()
+                .then((fpath) => {
+                    return getUserPassword()
+                        .then((password) => [fpath, password])
+                })
+        }
 
-            db.setConfig({filePath, key})
+        return new Promise((resolve, reject) => {
+            const {filePath, key} = db.getConfig()
+            const prom = filePath ? Promise.resolve([filePath, key]) : getFilePathAndPassword()
+            prom.then(([filePath, key]) => {
+                if (!filePath) throw new FileSaveCancelledError('Saving cancelled')
+                if (!key) throw new Error('Invalid key')
+
+                return db.setConfig({filePath, key})
+            })
                 .then(() => db.saveToFile())
-                .then(resolve)
+                .catch(reject)
                 .catch(reject)
         })
     },
@@ -87,12 +108,17 @@ const actions = {
     },
 
     openFile ({ dispatch }) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             const filePath = _.first(dialog.showOpenDialog())
+
             if (filePath) {
-                db.loadData(filePath, DEFAULT_FAKE_PASSWORD)
-                    .then(() => dispatch('loadEntries'))
-                    .then(resolve)
+                getUserPassword()
+                    .then(password => {
+                        return db.loadData(filePath, password)
+                            .then(() => dispatch('loadEntries'))
+                            .then(resolve)
+                    })
+                    .catch(reject)
             }
         })
     },

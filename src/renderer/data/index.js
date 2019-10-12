@@ -1,5 +1,4 @@
 import _ from 'lodash'
-// import fs from 'fs'
 
 import { DataIndexer } from '../indexer'
 import { getCipherKey } from './encryption-handler'
