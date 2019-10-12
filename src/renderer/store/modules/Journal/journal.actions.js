@@ -7,6 +7,8 @@ import _ from 'lodash'
 
 const { dialog } = require('electron').remote
 
+const DEFAULT_FAKE_PASSWORD = 'FAKE PASSWORD 123'
+
 class FileSaveCancelledError extends Error {
     constructor (message) {
         super(message)
@@ -52,13 +54,18 @@ const actions = {
     },
 
     saveDataToFile () {
-        return new Promise(resolve => {
-            const filePath = db.getConfig().filePath || dialog.showSaveDialog()
-            if (!filePath) throw new FileSaveCancelledError('Saving cancelled')
+        return new Promise((resolve, reject) => {
+            let {filePath, key} = db.getConfig()
+            if (!filePath) {
+                key = DEFAULT_FAKE_PASSWORD
+                filePath = dialog.showSaveDialog()
+                if (!filePath) throw new FileSaveCancelledError('Saving cancelled')
+            }
 
-            db.setConfig({filePath})
+            db.setConfig({filePath, key})
                 .then(() => db.saveToFile())
                 .then(resolve)
+                .catch(reject)
         })
     },
 
@@ -83,7 +90,7 @@ const actions = {
         return new Promise(resolve => {
             const filePath = _.first(dialog.showOpenDialog())
             if (filePath) {
-                db.loadData(filePath)
+                db.loadData(filePath, DEFAULT_FAKE_PASSWORD)
                     .then(() => dispatch('loadEntries'))
                     .then(resolve)
             }

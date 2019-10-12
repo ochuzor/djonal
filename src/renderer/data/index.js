@@ -1,6 +1,9 @@
 import _ from 'lodash'
+// import fs from 'fs'
+
 import { DataIndexer } from '../indexer'
-import fs from 'fs'
+import { getCipherKey } from './encryption-handler'
+import * as fileHandler from './file-handler'
 
 const config = {
     key: null,
@@ -8,19 +11,20 @@ const config = {
     indexer: new DataIndexer()
 }
 
-const loadData = (filePath) => {
-    return new Promise(resolve => {
-        console.log('opening file ->', filePath)
-        const fileData = fs.readFileSync(filePath, 'utf8')
-        const indexer = new DataIndexer()
-        indexer.initWith(fileData)
+const loadData = (filePath, password) => {
+    return new Promise((resolve, reject) => {
+        const key = getCipherKey(password)
+        fileHandler.loadTextFromFile(filePath, key)
+            .then((textData) => {
+                const indexer = new DataIndexer()
+                indexer.initWith(textData)
 
-        config.indexer = indexer
-        config.filePath = filePath
-
-        // const key = key
-        // @NB: only assign to config AFTER loading is successful
-        resolve()
+                config.key = key
+                config.indexer = indexer
+                config.filePath = filePath
+            })
+            .then(resolve)
+            .catch(reject)
     })
 }
 
@@ -59,20 +63,23 @@ const search = (searhTerm) => {
 }
 
 const getConfig = () => {
-    return _.pick(config, ['filePath'])
+    return _.pick(config, ['filePath', 'key'])
 }
 
 const setConfig = (opts) => {
-    const cfg = _.pick(opts, ['key', 'filePath'])
-    _.assign(config, cfg)
+    const filePath = opts.filePath
+    _.assign(config, {filePath, key: getCipherKey(opts.key)})
 
     return Promise.resolve()
 }
 
 const saveToFile = () => {
-    return new Promise(resolve => {
-        fs.writeFileSync(config.filePath, config.indexer.toString(), 'utf-8')
-        resolve()
+    return new Promise((resolve, reject) => {
+        const { filePath, key, indexer } = config
+        const text = indexer.toString()
+        fileHandler.saveToFile(filePath, text, key)
+            .then(resolve)
+            .catch(reject)
     })
 }
 
