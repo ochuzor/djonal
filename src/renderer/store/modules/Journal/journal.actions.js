@@ -21,6 +21,15 @@ const getUserPassword = () => {
     })
 }
 
+const getUserConfirmation = (message = 'Are you sure?') => {
+    return new Promise(resolve => {
+        vex.dialog.confirm({
+            message,
+            callback: resolve
+        })
+    })
+}
+
 class FileSaveCancelledError extends Error {
     constructor (message) {
         super(message)
@@ -28,23 +37,7 @@ class FileSaveCancelledError extends Error {
     }
 }
 
-const showWarning = (msg = 'Are you sure?') => {
-    return new Promise(resolve => {
-        const resp = dialog.showMessageBox({
-            title: 'Warning',
-            type: 'warning',
-            buttons: ['No', 'Yes'],
-            message: msg})
-
-        resolve(resp)
-    })
-}
-
 const actions = {
-    initDb ({ commit }, options) {
-        console.log('init db ->', options)
-    },
-
     loadEntries ({ commit }) {
         return db.getAll()
             .then(docs => {
@@ -86,23 +79,22 @@ const actions = {
             })
                 .then(() => db.saveToFile())
                 .catch(reject)
-                .catch(reject)
         })
     },
 
     loadFromFile ({ dispatch, state }) {
-        // @todo REFACTOR
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             if (state.Entries.length && !db.getConfig().filePath) {
-                const resp = dialog.showMessageBox({
-                    type: 'warning',
-                    buttons: ['No', 'Yes'],
-                    message: 'Save current file?'})
-
-                const prom = resp ? dispatch('saveDataToFile') : dispatch('openFile')
-                prom.then(resolve)
+                getUserConfirmation('Save current file?')
+                    .then(isConfirmed => {
+                        return isConfirmed ? dispatch('saveDataToFile') : dispatch('openFile')
+                    })
+                    .then(resolve)
+                    .catch(reject)
             } else {
-                dispatch('openFile').then(resolve)
+                dispatch('openFile')
+                    .then(resolve)
+                    .catch(reject)
             }
         })
     },
@@ -124,16 +116,19 @@ const actions = {
     },
 
     newFile ({ dispatch, state }) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             const dbChanges = () => db.startNew().then(() => dispatch('loadEntries'))
             if (state.Entries.length && !db.getConfig().filePath) {
-                showWarning('Save current file?')
+                getUserConfirmation('Save current file?')
                     .then(resp => {
                         return resp ? dispatch('saveDataToFile') : dbChanges()
                     })
                     .then(resolve)
+                    .catch(reject)
             } else {
-                dbChanges().then(resolve)
+                dbChanges()
+                    .then(resolve)
+                    .catch(reject)
             }
         })
     }
