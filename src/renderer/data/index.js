@@ -57,9 +57,9 @@ const saveDoc = (data) => {
     })
 }
 
-const deleteOne = (data) => {
+const deleteOne = (id) => {
     return new Promise(resolve => {
-        resolve(config.indexer.removeFromIndex(data))
+        resolve(config.indexer.removeFromIndex(id))
     })
 }
 

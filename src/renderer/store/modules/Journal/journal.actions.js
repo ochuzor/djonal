@@ -38,10 +38,10 @@ const actions = {
             })
     },
 
-    deleteEntry ({ dispatch, commit }, item) {
-        return db.deleteOne(item)
+    deleteEntry ({ dispatch, commit }, id) {
+        return db.deleteOne(id)
             .then(() => {
-                commit(REMOVE_ENTRY, item.id)
+                commit(REMOVE_ENTRY, id)
                 return db.saveToFile()
             })
     },

@@ -58,7 +58,7 @@ export default {
         deleteItem (item) {
             getUserConfirmation()
                 .then((isConfirmed) => {
-                    return isConfirmed ? this.deleteEntry(item) : null
+                    return isConfirmed ? this.deleteEntry(item.id) : null
                 })
                 .then(this.createNewEntry)
                 .catch(console.error)
