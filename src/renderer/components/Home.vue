@@ -27,7 +27,8 @@
             <button @click="deleteItem(selectedEntry)">delete</button>
             <button @click="saveChanges(selectedEntry)">save</button>
         </div>
-        <textarea class="edit-box" v-model="selectedEntry.text" placeholder="select or create a new entry to edit"></textarea>
+        <!-- <textarea class="edit-box" v-model="selectedEntry.text" placeholder="select or create a new entry to edit"></textarea> -->
+        <medium-editor :text="selectedEntry.text" @edit="editText" />
       </div>
 
     </div>
@@ -38,9 +39,15 @@ import _ from 'lodash'
 import shortid from 'shortid'
 import data from '../data'
 import { mapGetters, mapActions } from 'vuex'
+import editor from 'vue2-medium-editor'
+
 import { getUserConfirmation } from '../dialog-handlers'
 
 export default {
+    components: {
+        'medium-editor': editor
+    },
+
     data () {
         return ({
             selectedEntry: {
@@ -105,6 +112,11 @@ export default {
             this.newFile()
                 .then(this.createNewEntry)
                 .catch(console.error)
+        },
+
+        editText (operation) {
+            // console.log('text ->', operation.api.origElements.innerHTML)
+            this.selectedEntry.text = operation.api.origElements.innerHTML
         }
     },
 

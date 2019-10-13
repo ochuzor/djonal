@@ -56,11 +56,13 @@
     "axios": "^0.18.0",
     "flexsearch": "^0.6.30",
     "lodash": "^4.17.15",
+    "medium-editor": "^5.23.3",
     "shortid": "^2.2.15",
     "vex-js": "^4.1.0",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.0.1",
+    "vue2-medium-editor": "^1.1.6",
     "vuex": "^3.0.1",
     "vuex-electron": "^1.0.0"
   },
