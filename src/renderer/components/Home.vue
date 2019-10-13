@@ -17,7 +17,7 @@
       <div class="side-nav">
         <div :class="['entry-list-itm', entry.id === selectedEntry.id ? 'selected-item' : '']" 
             v-for="entry in entries" :key="entry.id" @click="selectEntry(entry)">
-            {{entry.text}}
+            <span v-html="entry.text"></span>
         </div>
       </div>
 
@@ -27,7 +27,7 @@
             <button @click="deleteItem(selectedEntry)">delete</button>
             <button @click="saveChanges(selectedEntry)">save</button>
         </div>
-        <!-- <textarea class="edit-box" v-model="selectedEntry.text" placeholder="select or create a new entry to edit"></textarea> -->
+
         <medium-editor :text="selectedEntry.text" @edit="editText" />
       </div>
 
@@ -173,11 +173,6 @@ export default {
         height: calc(100% - 60px);;
         width: 100%;
         background-color: lightcyan;
-
-        textarea {
-            width: 98%;
-            height: 96%;
-        }
     }
 
     .entry-list-itm {
