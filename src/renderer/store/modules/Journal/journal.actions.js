@@ -1,34 +1,14 @@
 import db from '../../../data'
 import {
     SET_ENTRY_LIST,
-    SAVE_ENTRY
+    SAVE_ENTRY,
+    REMOVE_ENTRY
 } from './journal.constants'
 import _ from 'lodash'
 
-const vex = require('vex-js')
-vex.registerPlugin(require('vex-dialog'))
-vex.defaultOptions.className = 'vex-theme-os'
+import {getUserConfirmation, getUserPassword} from '../../../dialog-handlers'
 
 const { dialog } = require('electron').remote
-
-const getUserPassword = () => {
-    return new Promise((resolve) => {
-        vex.dialog.prompt({
-            message: 'Enter password',
-            placeholder: 'Password',
-            callback: resolve
-        })
-    })
-}
-
-const getUserConfirmation = (message = 'Are you sure?') => {
-    return new Promise(resolve => {
-        vex.dialog.confirm({
-            message,
-            callback: resolve
-        })
-    })
-}
 
 class FileSaveCancelledError extends Error {
     constructor (message) {
@@ -55,6 +35,14 @@ const actions = {
                 if (filePath) db.saveToFile()
 
                 return doc
+            })
+    },
+
+    deleteEntry ({ dispatch, commit }, item) {
+        return db.deleteOne(item)
+            .then(() => {
+                commit(REMOVE_ENTRY, item.id)
+                return db.saveToFile()
             })
     },
 

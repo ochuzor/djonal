@@ -57,6 +57,12 @@ const saveDoc = (data) => {
     })
 }
 
+const deleteOne = (data) => {
+    return new Promise(resolve => {
+        resolve(config.indexer.removeFromIndex(data))
+    })
+}
+
 const search = (searhTerm) => {
     return config.indexer.search(searhTerm)
 }
@@ -91,5 +97,6 @@ export default {
     getConfig,
     setConfig,
     saveToFile: _.throttle(saveToFile, 1000),
-    startNew
+    startNew,
+    deleteOne
 }

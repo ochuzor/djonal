@@ -29,8 +29,8 @@ class DataIndexer {
         this._indexer.add(doc)
     }
 
-    removeFromIndex (docs) {
-        this._indexer.delete(docs)
+    removeFromIndex (doc) {
+        this._indexer.remove(_.pick(doc, ['id', 'text']))
     }
 
     search (term) {

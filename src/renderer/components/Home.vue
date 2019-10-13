@@ -24,6 +24,7 @@
       <div class="content-wrapper">
         <div>
             <button @click="createNewEntry()">+</button>
+            <button @click="deleteItem(selectedEntry)">delete</button>
             <button @click="saveChanges(selectedEntry)">save</button>
         </div>
         <textarea class="edit-box" v-model="selectedEntry.text" placeholder="select or create a new entry to edit"></textarea>
@@ -37,6 +38,7 @@ import _ from 'lodash'
 import shortid from 'shortid'
 import data from '../data'
 import { mapGetters, mapActions } from 'vuex'
+import { getUserConfirmation } from '../dialog-handlers'
 
 export default {
     data () {
@@ -50,7 +52,17 @@ export default {
     },
 
     methods: {
-        ...mapActions(['loadEntries', 'saveEntry', 'saveDataToFile', 'loadFromFile', 'newFile']),
+        ...mapActions(['loadEntries', 'saveEntry', 'saveDataToFile',
+            'loadFromFile', 'newFile', 'deleteEntry']),
+
+        deleteItem (item) {
+            getUserConfirmation()
+                .then((isConfirmed) => {
+                    return isConfirmed ? this.deleteEntry(item) : null
+                })
+                .then(this.createNewEntry)
+                .catch(console.error)
+        },
 
         saveChanges (item) {
             if (item && !_.isEmpty(item.text)) {
