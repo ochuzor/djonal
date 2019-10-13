@@ -6,7 +6,11 @@ import {
 } from './journal.constants'
 import _ from 'lodash'
 
-import {getUserConfirmation, getUserPassword} from '../../../dialog-handlers'
+import {
+    getUserConfirmation,
+    getUserPassword,
+    getSaveFilePathThenPassword
+} from '../../../dialog-handlers'
 
 const { dialog } = require('electron').remote
 
@@ -47,23 +51,16 @@ const actions = {
     },
 
     saveDataToFile () {
-        const getFileSavePath = () => Promise.resolve(dialog.showSaveDialog())
-        const getFilePathAndPassword = () => {
-            return getFileSavePath()
-                .then((fpath) => {
-                    return getUserPassword()
-                        .then((password) => [fpath, password])
-                })
-        }
-
         return new Promise((resolve, reject) => {
             const {filePath} = db.getConfig()
             // if there's file path, then assume there is password.
             // they must be set and modified together
             if (filePath) {
-                db.saveToFile().then(resolve)
+                db.saveToFile()
+                    .then(resolve)
+                    .catch(reject)
             } else {
-                getFilePathAndPassword()
+                getSaveFilePathThenPassword()
                     .then(([filePath, key]) => {
                         if (!filePath) throw new FileSaveCancelledError('Saving cancelled')
                         if (!key) throw new Error('Invalid key')
