@@ -57,16 +57,23 @@ const actions = {
         }
 
         return new Promise((resolve, reject) => {
-            const {filePath, key} = db.getConfig()
-            const prom = filePath ? Promise.resolve([filePath, key]) : getFilePathAndPassword()
-            prom.then(([filePath, key]) => {
-                if (!filePath) throw new FileSaveCancelledError('Saving cancelled')
-                if (!key) throw new Error('Invalid key')
+            const {filePath} = db.getConfig()
+            // if there's file path, then assume there is password.
+            // they must be set and modified together
+            if (filePath) {
+                db.saveToFile().then(resolve)
+            } else {
+                getFilePathAndPassword()
+                    .then(([filePath, key]) => {
+                        if (!filePath) throw new FileSaveCancelledError('Saving cancelled')
+                        if (!key) throw new Error('Invalid key')
 
-                return db.setConfig({filePath, key})
-            })
-                .then(() => db.saveToFile())
-                .catch(reject)
+                        return db.setConfig({filePath, key})
+                    })
+                    .then(() => db.saveToFile())
+                    .then(resolve)
+                    .catch(reject)
+            }
         })
     },
 
