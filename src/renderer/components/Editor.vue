@@ -24,8 +24,8 @@
                     ]
                 },
                 placeholder: 'write somethin...',
-                // theme: 'snow',
-                theme: 'bubble',
+                theme: 'snow',
+                // theme: 'bubble',
                 formats: ['bold', 'underline', 'header', 'italic']
             })
 
