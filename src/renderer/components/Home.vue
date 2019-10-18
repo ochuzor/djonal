@@ -28,7 +28,8 @@
             <button @click="saveChanges(selectedEntry)">save</button>
         </div>
 
-        <medium-editor :text="selectedEntry.text" @edit="editText" />
+        <!-- <medium-editor :text="selectedEntry.text" @edit="editText" /> -->
+        <editor v-model="selectedEntry.text"></editor>
       </div>
 
     </div>
@@ -39,13 +40,15 @@ import _ from 'lodash'
 import shortid from 'shortid'
 import data from '../data'
 import { mapGetters, mapActions } from 'vuex'
-import editor from 'vue2-medium-editor'
+// import editor from 'vue2-medium-editor'
+import editor from './Editor'
 
 import { getUserConfirmation } from '../dialog-handlers'
 
 export default {
     components: {
-        'medium-editor': editor
+        // 'medium-editor': editor
+        editor
     },
 
     data () {
