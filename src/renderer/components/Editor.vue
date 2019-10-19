@@ -28,15 +28,19 @@
                 // theme: 'bubble',
                 formats: ['bold', 'underline', 'header', 'italic']
             })
-
-            this.editor.root.innerHTML = this.value
+            // uses .toString() to sort of get a copy of added string
+            this.editor.root.innerHTML = this.value.toString()
 
             this.editor.on('text-change', () => this.update())
         },
 
         methods: {
             update () {
-                this.$emit('input', this.editor.getText() ? this.editor.root.innerHTML : '')
+                this.$emit('input', this.editor.getText() ? this.editor.root.innerHTML.toString() : '')
+            },
+
+            setTextValue (text = '') {
+                this.editor.root.innerHTML = text.toString()
             }
         }
     }

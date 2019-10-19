@@ -29,7 +29,7 @@
         </div>
 
         <!-- <medium-editor :text="selectedEntry.text" @edit="editText" /> -->
-        <editor v-model="selectedEntry.text"></editor>
+        <editor v-model="selectedEntry.text" ref="editor"></editor>
       </div>
 
     </div>
@@ -83,9 +83,7 @@ export default {
 
         selectEntry (item) {
             data.getOne(item.id)
-                .then(entry => {
-                    this.selectedEntry = Object.assign({}, entry)
-                })
+                .then(this.setSelectedEntry)
                 .catch(err => {
                     console.error('could not get item', item.id, err)
                 })
@@ -93,7 +91,12 @@ export default {
 
         createNewEntry () {
             const id = shortid.generate()
-            this.selectedEntry = { id, text: '' }
+            this.setSelectedEntry({ id, text: '' })
+        },
+
+        setSelectedEntry (entry) {
+            this.selectedEntry = Object.assign({}, entry)
+            this.$refs.editor.setTextValue(this.selectedEntry.text)
         },
 
         saveToFile () {
