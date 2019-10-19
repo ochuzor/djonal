@@ -46,7 +46,8 @@ const actions = {
         return db.deleteOne(id)
             .then(() => {
                 commit(REMOVE_ENTRY, id)
-                return db.saveToFile()
+                const {filePath} = db.getConfig()
+                return filePath ? db.saveToFile() : null
             })
     },
 
